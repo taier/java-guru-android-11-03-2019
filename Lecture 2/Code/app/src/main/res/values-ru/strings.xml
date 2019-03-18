@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Lesson2</string>
+
+    <string name="title_email">Емаил</string>
+    <string name="title_password">Пароль</string>
+
+    <string name="button_login">Логин</string>
+</resources>
