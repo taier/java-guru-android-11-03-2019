@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Lesson3</string>
+
+    <string-array name="car_types">
+        <item>Truck</item>
+        <item>Sedan</item>
+        <item>Van</item>
+        <item>Coupe</item>
+        <item>Wagon</item>
+        <item>Convertible</item>
+        <item>Crossover</item>
+    </string-array>
+
+    <string-array name="streets_array">
+        <item>Dzirnavu</item>
+        <item>Terbates</item>
+        <item>Stabu</item>
+        <item>Matisa</item>
+        <item>Marijas</item>
+        <item>Avotu</item>
+        <item>Caka</item>
+        <item>Brivibas</item>
+    </string-array>
+
+    <string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
+</resources>
