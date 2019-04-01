@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,7 +14,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -56,7 +71,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         toast.show();
     }
 
-    public void onNothingSelected(AdapterView<?> parent) {}
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
 
     //  ****************************************************************
     //  ************************* LIST VIEW ****************************
@@ -178,20 +194,49 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Resources res = getResources();
-        final String[] carsNameArray = res.getStringArray(R.array.car_types);
-        final ArrayList<CarObject> carsList = new ArrayList<CarObject>();
-        for (int i = 0; i < carsNameArray.length; i++) {
-            String carName = carsNameArray[i];
-            int resourceId =  this.getResources().getIdentifier(carName.toLowerCase(), "drawable", getPackageName());
-            Drawable carImage = getResources().getDrawable(resourceId);
-            CarObject newCar = new CarObject(carName, carImage);
-            carsList.add(newCar);
-        }
+
+        final ArrayList<PhotoItem> photoItems = new ArrayList<PhotoItem>();
+
+        Request request = new Request.Builder()
+                .url("https://api.unsplash.com/photos/?client_id=311ed690d7678d20b8ce556e56d5bf168d6ddf9fa1126e58193d95089d796542")
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        final Gson gson = new Gson();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                String jsonString = response.body().string();
+                try {
+                    JSONArray array = new JSONArray(jsonString);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject imgObject = array.getJSONObject(i);
+                        PhotoItem item = gson.fromJson(imgObject.toString(), PhotoItem.class);
+                        photoItems.add(item);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(()-> {
+                    showPhotoItems(photoItems);
+                });
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                int a = 0;
+            }
+        });
+    }
+
+    private void showPhotoItems(ArrayList<PhotoItem> items) {
 
         // Create adapter
-        ArrayAdapter<CarObject> cheeseAdapterAdvanced =
-                new ArrayAdapter<CarObject>(this, 0, carsList) {
+        ArrayAdapter<PhotoItem> cheeseAdapterAdvanced =
+                new ArrayAdapter<PhotoItem>(this, 0, items) {
 
                     // method to override in order to setup custom view
                     @Override
@@ -200,7 +245,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                                         ViewGroup parent) {
 
                         // Get data item to display
-                        CarObject carObject = carsList.get(position);
+                        PhotoItem photoItem = items.get(position);
 
                         // Check if view was reused, if not create a new
                         if (convertView == null) {
@@ -208,12 +253,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                         }
 
                         // If no saved view holder, create and setup
-                        if(convertView.getTag() == null) {
-                            ViewHolderCar viewHolder = new ViewHolderCar();
-
-                            // Set reference to elements
-                            viewHolder.imageViewCar = convertView.findViewById(R.id.imageViewCar);
-                            viewHolder.textViewText = convertView.findViewById(R.id.textViewText);
+                        if (convertView.getTag() == null) {
+                            ViewHolderCar viewHolder = new ViewHolderCar(convertView);
 
                             // Assign to view
                             convertView.setTag(viewHolder);
@@ -224,8 +265,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                         TextView textViewText = ((ViewHolderCar) convertView.getTag()).textViewText;
 
                         // Set elements data
-                        imageViewCar.setImageDrawable(carObject.imageDrawable);
-                        textViewText.setText(carObject.name);
+//                        imageViewCar.setImageDrawable(photoItem.imageDrawable);
+                        Picasso.get().load(photoItem.getImgUrl()).into(imageViewCar);
+                        textViewText.setText(photoItem.getName());
 
                         // return view to show
                         return convertView;
@@ -243,19 +285,5 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         cheeseGrid.setVerticalSpacing(20);
         cheeseGrid.setHorizontalSpacing(20);
         cheeseGrid.setAdapter(cheeseAdapterAdvanced);
-
-        // Set on touch listener
-        cheeseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView,
-                                    View view, int position, long rowId) {
-
-                // Generate a message based on the position
-                String message = "You clicked on " + carsNameArray[position];
-
-                Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
     }
 }
