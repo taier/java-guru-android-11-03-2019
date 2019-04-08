@@ -8,8 +8,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ViewHolder {
-    @BindView(R.id.imageView) ImageView imageView;
-    @BindView(R.id.textViewAuthor) TextView textViewAuthor;
+    public @BindView(R.id.imageView) ImageView imageView;
+    public @BindView(R.id.textViewAuthor) TextView textViewAuthor;
 
 
     public ViewHolder (View view) { ButterKnife.bind(this, view); }

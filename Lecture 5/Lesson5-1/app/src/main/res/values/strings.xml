@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lesson4</string>
+    <string name="unsplash_url">https://api.unsplash.com/photos/?client_id=311ed690d7678d20b8ce556e56d5bf168d6ddf9fa1126e58193d95089d796542</string>
 </resources>
