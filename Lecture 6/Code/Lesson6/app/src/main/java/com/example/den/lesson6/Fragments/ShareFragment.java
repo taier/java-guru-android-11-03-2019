@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
  */
 public class ShareFragment extends Fragment {
 
+    // Share fragment callbacks
     public interface ShareFragmentListener {
         void onInfoPress();
         void onSharePress();
@@ -39,6 +40,9 @@ public class ShareFragment extends Fragment {
         // Required empty public constructor
     }
 
+    // Method that would connect callbacks of
+    // Fragment to activity, no need to do that
+    // Inside activity
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -57,8 +61,10 @@ public class ShareFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_share, container, false);
         ButterKnife.bind(this, view);
 
+        // Load images
         Picasso.get().load(photoItem.getImgUrl()).into(imageViewImage);
 
+        // Set buttons
         buttonShare.setOnClickListener(button -> {
             listener.onSharePress();
         });

@@ -18,13 +18,17 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Set needed networking manager
         NetworkingManager networkingManager = new NetworkingManagerGiphy();
 //        NetworkingManager networkingManager = new NetworkingManagerUnsplash();
 
+        // Set needed presenter
         PhotoItemsPresenter presenter = new PhotoItemPresenterGridView();
 
+        // Ask networking manager for images
         networkingManager.getPhotoItems(photoItems ->
-                runOnUiThread(()-> {
+                runOnUiThread(()-> { // when items are ready
+                    // present them via presenter
                     presenter.setupWithPhotoItems(photoItems,this, this);
             })
         );
@@ -32,7 +36,7 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
 
     @Override
     public void onItemSelected(PhotoItem item) {
-        Intent shareIntent = ShareActivityWithFragments.buildIntent(this, item);
+        Intent shareIntent = BaseActivity.buildIntent(this, item, ShareActivityWithFragments.class);
         startActivity(shareIntent);
     }
 }
