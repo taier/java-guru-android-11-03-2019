@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+    defaultConfig {
+        applicationId "com.example.den.lesson3"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    implementation 'com.android.support:support-annotations:24.2.0'
+
+    implementation 'com.github.satyan:sugar:1.5'
+
+//    annotationProcessor 'com.github.maskarade.android.orma:orma-processor:6.0.2'
+//    implementation 'com.github.maskarade.android.orma:orma:6.0.2'
+
+    implementation 'com.yakivmospan:scytale:1.0.1'
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation 'junit:junit:4.12'
+}
+

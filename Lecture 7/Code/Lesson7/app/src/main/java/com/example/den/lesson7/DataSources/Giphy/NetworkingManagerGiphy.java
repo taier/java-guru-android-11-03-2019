@@ -23,18 +23,41 @@ import okhttp3.Response;
 
 public class NetworkingManagerGiphy implements NetworkingManager {
 
+    private ArrayList<PhotoItem> photoItems = new ArrayList<>();
+    private int limit = 50;
+    private int offset = 0;
+    private boolean requestInProgress = false;
+
     @Override
     public void getPhotoItems(NetworkingResultListener result) {
+        getItems(result);
+    }
+
+    @Override
+    public void fetchNewItemsFromPosition(int lastPosition, NetworkingResultListener result) {
+
+        if(requestInProgress) {
+            return;
+        }
+
+        if(offset <= lastPosition) {
+            requestInProgress = true;
+            offset += limit;
+            getItems(result);
+        }
+    }
+
+    private void getItems(NetworkingResultListener result) {
 
         Request request = new Request.Builder()
-                .url("https://api.giphy.com/v1/stickers/trending?api_key=VvyONhZ6eUFDFtuwg7w9tUYXzgefYdYy&limit=25&rating=G")
+                .url("https://api.giphy.com/v1/stickers/trending?api_key=VvyONhZ6eUFDFtuwg7w9tUYXzgefYdYy&limit=" + limit +"&offset=" + offset + "&rating=G")
                 .build();
 
         final Gson gson = new Gson();
         OkHttpClient client = new OkHttpClient();
         JsonParser parser = new JsonParser();
-        final ArrayList<PhotoItem> photoItems = new ArrayList<PhotoItem>();
 
+        requestInProgress = true;
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
@@ -54,6 +77,7 @@ public class NetworkingManagerGiphy implements NetworkingManager {
                 } catch (Exception ex) {
                     Log.e("ERROR", ex.getLocalizedMessage());
                 } finally {
+                    requestInProgress = false;
                     result.callback(photoItems.toArray(new PhotoItem[photoItems.size()]));
                 }
             }

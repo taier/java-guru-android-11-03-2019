@@ -61,4 +61,9 @@ public class NetworkingManagerUnsplash implements NetworkingManager {
 
             }});
     }
+
+    @Override
+    public void fetchNewItemsFromPosition(int lastPosition, NetworkingResultListener result) {
+
+    }
 }

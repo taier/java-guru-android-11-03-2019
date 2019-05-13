@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -17,10 +18,13 @@ import com.squareup.picasso.Picasso;
 
 public class PhotoItemPresenterGridView implements PhotoItemsPresenter {
 
+    PhotoItem[] photoItems;
+    ArrayAdapter<PhotoItem> dataAdapter;
+
     @Override
-    public void setupWithPhotoItems(PhotoItem[] photoItems, Activity activity, PhotoItemsPresenterCallbacks callback) {
-        ArrayAdapter<PhotoItem> carsAdapter =
-                new ArrayAdapter<PhotoItem>(activity, 0, photoItems) {
+    public void setupWithPhotoItems(PhotoItem[] items, Activity activity, PhotoItemsPresenterCallbacks callback) {
+        this.photoItems = items;
+        dataAdapter = new ArrayAdapter<PhotoItem>(activity, 0, this.photoItems) {
                     @Override
                     public View getView(int position,
                                         View convertView,
@@ -56,6 +60,11 @@ public class PhotoItemPresenterGridView implements PhotoItemsPresenter {
 
                     }
 
+            @Override
+            public int getCount() {
+                return photoItems.length;
+            }
+
                 };
 
         GridView gridView = new GridView(activity);
@@ -64,14 +73,35 @@ public class PhotoItemPresenterGridView implements PhotoItemsPresenter {
         gridView.setColumnWidth(40);
         gridView.setVerticalSpacing(20);
         gridView.setHorizontalSpacing(20);
-        gridView.setAdapter(carsAdapter);
+        gridView.setAdapter(dataAdapter);
 
 
         gridView.setOnItemClickListener((adapterView, view, i, l) ->{
             callback.onItemSelected(photoItems[i]);
         });
+
+        gridView.setOnScrollListener(new AbsListView.OnScrollListener(){
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+            {
+                if(firstVisibleItem + visibleItemCount >= totalItemCount){
+                    callback.onLastItemReach(totalItemCount);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState){
+
+            }
+        });
     }
 
+
+    @Override
+    public void updateWithItems(PhotoItem[] photoItems) {
+        this.photoItems = photoItems;
+        dataAdapter.notifyDataSetChanged();
+    }
 
     private void updateFavoriteButton(ImageButton imageButton, PhotoItem photoItem, Context context) {
 //        boolean isFavorited = SharedPreferencesHelper.isFavorited(photoItem.getID(), context);

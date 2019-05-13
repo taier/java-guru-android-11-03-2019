@@ -46,6 +46,5 @@ public class SecureDataHelper {
         Log.i("Scytale", "Decrypted data: " + decryptedData);
 
         return decryptedData;
-
     }
 }

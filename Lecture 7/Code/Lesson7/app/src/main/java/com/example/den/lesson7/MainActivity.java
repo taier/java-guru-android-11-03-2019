@@ -13,11 +13,13 @@ import android.view.MenuItem;
 
 import com.example.den.lesson7.DataSources.Giphy.NetworkingManagerGiphy;
 import com.example.den.lesson7.DataSources.Giphy.PhotoItemsGiphy;
+import com.example.den.lesson7.DataSources.Local.NetworkingManagerLocal;
 import com.example.den.lesson7.DataSources.Local.SecureDataHelper;
 import com.example.den.lesson7.DataSources.Local.SharedPreferencesHelper;
 import com.example.den.lesson7.DataSources.Unsplash.NetworkingManagerUnsplash;
 import com.example.den.lesson7.DataSources.Unsplash.PhotoItemUnsplash;
 import com.example.den.lesson7.Interfaces.NetworkingManager;
+import com.example.den.lesson7.Interfaces.NetworkingResultListener;
 import com.example.den.lesson7.Interfaces.PhotoItem;
 import com.example.den.lesson7.Interfaces.PhotoItemsPresenter;
 import com.example.den.lesson7.Interfaces.PhotoItemsPresenterCallbacks;
@@ -39,12 +41,16 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
     //TODO 2: Add to that button ability to change service to Giphy (like its done with Unsplash)
     //TODO 3: Add new activity "FavoriteActivity" to show on Favotie button press
     //TODO 4: Show on "FavoriteActivity" favorited items by PhotoItemPresenter :)
-    //*TODO 5 EXTRA: handle removing favorites from "FavoriteActivity"
+    //TODO 5: handle removing favorites from "FavoriteActivity"
     //*TODO 6 EXTRA EXTRA: Implement safe remove (do not delete anything from database)
+
+    NetworkingManager networkingManager = null;
+    PhotoItemsPresenter presenter = null;
 
     public enum ImgServices {
         UNSPLASH,
-        GIPHY
+        GIPHY,
+        FAVORITES
     }
 
     @Override
@@ -55,8 +61,6 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
 
     private void showImgService(ImgServices service) {
 
-        NetworkingManager networkingManager = null;
-
         switch (service) {
             case GIPHY:
                 networkingManager = new NetworkingManagerGiphy();
@@ -64,9 +68,12 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
             case UNSPLASH:
                 networkingManager = new NetworkingManagerUnsplash();
                 break;
+            case FAVORITES:
+                networkingManager = new NetworkingManagerLocal();
+                break;
         }
 
-        PhotoItemsPresenter presenter = new PhotoItemPresenterGridView();
+        presenter = new PhotoItemPresenterGridView();
         networkingManager.getPhotoItems(photoItems ->
                 runOnUiThread(()-> {
                     presenter.setupWithPhotoItems(photoItems,this, this);
@@ -87,6 +94,16 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
     }
 
     @Override
+    public void onLastItemReach(int position) {
+
+        networkingManager.fetchNewItemsFromPosition(position, photoItems -> {
+            runOnUiThread(()-> {
+                presenter.updateWithItems(photoItems);
+            });
+        });
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_menu, menu);
 
@@ -94,7 +111,8 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
         favoriteMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                return false;
+                showImgService(ImgServices.FAVORITES);
+                return true;
             }
         });
 
@@ -123,17 +141,6 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
         } else {
             item.saveToDatabase();
         }
-    }
-
-    private PhotoItem[] getAllSavedPhotoItems() {
-
-        List<PhotoItem>allFavoritedItems = new ArrayList<PhotoItem>();
-
-        allFavoritedItems.addAll(SugarRecord.listAll(PhotoItemsGiphy.class));
-        allFavoritedItems.addAll(SugarRecord.listAll(PhotoItemUnsplash.class));
-
-
-        return allFavoritedItems.toArray(new PhotoItem[allFavoritedItems.size()]);
     }
 
     // *****************************************************
