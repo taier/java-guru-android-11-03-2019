@@ -15,6 +15,7 @@ import com.example.den.lesson10.Interfaces.PhotoItemsPresenter;
 import com.example.den.lesson10.Interfaces.PhotoItemsPresenterCallbacks;
 import com.example.den.lesson10.Presenters.GridView.PhotoItemPresenterGridView;
 import com.example.den.lesson10.Presenters.RecyclerView.PhotoPresenterRecyclerView;
+import com.kaibagarov.android_helpers.DKAdHelper;
 
 
 public class MainActivity extends Activity implements PhotoItemsPresenterCallbacks {
@@ -31,7 +32,9 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         showImgService(ImgServices.GIPHY);
+        showAd();
     }
 
     private void showImgService(ImgServices service) {
@@ -51,7 +54,10 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
 //        this.presenter = new PhotoPresenterRecyclerView();
         this.networkingManager.getPhotoItems(photoItems ->
                 runOnUiThread(()-> {
-                    presenter.setupWithPhotoItems(photoItems,this, this);
+                    presenter.setupWithPhotoItems(photoItems,
+                            this,
+                            findViewById(R.id.mainContainer),
+                            this);
                 })
         );
     }
@@ -128,6 +134,18 @@ public class MainActivity extends Activity implements PhotoItemsPresenterCallbac
             }
         } else {
             item.saveToDatabase();
+        }
+    }
+
+    private void showAd() {
+        DKAdHelper adHelper = new DKAdHelper(this, "ca-app-pub-XXXXX"); // your publisher ID, obtained from AdMob console
+        adHelper.bannerAdUnitID = "ca-app-pub-XXXXX"; // your banner ID, obtained from AdMob console
+        adHelper.containerForAD = findViewById(R.id.adContainer); // container to put ad into
+
+        if (BuildConfig.DEBUG) { // on debug show test ad
+            adHelper.showTestAdBanner();
+        } else {
+            adHelper.showAdBanner();
         }
     }
 }

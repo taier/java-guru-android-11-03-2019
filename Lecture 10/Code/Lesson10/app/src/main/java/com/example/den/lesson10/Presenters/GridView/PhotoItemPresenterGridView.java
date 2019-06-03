@@ -24,14 +24,17 @@ public class PhotoItemPresenterGridView implements PhotoItemsPresenter {
     private GridView gridView;
 
     @Override
-    public void setupWithPhotoItems(PhotoItem[] items, Activity activity, PhotoItemsPresenterCallbacks callback) {
+    public void setupWithPhotoItems(PhotoItem[] items,
+                                    Activity activity,
+                                    LinearLayout layoutToPresent,
+                                    PhotoItemsPresenterCallbacks callback) {
 
-        if(items.length == 0) {
-            activity.setContentView(R.layout.activity_empty);
-            Glide.with(activity).load(R.drawable.empty)
-                    .into((ImageView)activity.findViewById(R.id.imageViewImage));
-            return;
-        }
+//        if(items.length == 0) {
+//            activity.setContentView(R.layout.activity_empty);
+//            Glide.with(activity).load(R.drawable.empty)
+//                    .into((ImageView)activity.findViewById(R.id.imageViewImage));
+//            return;
+//        }
 
         this.photoItems = items;
         this.dataAdapter =
@@ -89,8 +92,8 @@ public class PhotoItemPresenterGridView implements PhotoItemsPresenter {
         gridView.setAdapter(dataAdapter);
         gridView.setBackgroundColor(activity.getResources().getColor(R.color.colorBackgroundMain));
 
-        activity.setContentView(R.layout.activity_main);
-        ((LinearLayout)activity.findViewById(R.id.mainContainer)).addView(gridView);
+        layoutToPresent.removeAllViews();
+        layoutToPresent.addView(gridView);
 
         gridView.setOnItemClickListener((adapterView, view, i, l) ->{
             callback.onItemSelected(photoItems[i]);

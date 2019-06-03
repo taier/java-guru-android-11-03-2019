@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewImage"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_margin="20dp" />
+
+    <Button
+        android:id="@+id/buttonShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="34sp"
+        android:textColor="#FFF"
+        android:textAllCaps="true"
+        android:background="@drawable/rounded_corner"
+        android:text="@string/button_share" />
+    <ImageButton
+        android:id="@+id/buttonInfo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/imageViewImage"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:scaleType="fitXY"
+        android:layout_gravity="center"
+        android:src="@drawable/info"
+        android:background="@android:color/transparent"
+        android:onClick="onShareButton"/>
+</RelativeLayout>

@@ -3,6 +3,7 @@ package com.example.den.lesson10.Presenters.RecyclerView;
 import android.app.Activity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.LinearLayout;
 
 
 import com.example.den.lesson10.Interfaces.PhotoItem;
@@ -15,7 +16,10 @@ public class PhotoPresenterRecyclerView implements PhotoItemsPresenter {
     private Adapter mAdapter;
 
     @Override
-    public void setupWithPhotoItems(PhotoItem[] photoItems, Activity activity, PhotoItemsPresenterCallbacks callback) {
+    public void setupWithPhotoItems(PhotoItem[] photoItems,
+                                    Activity activity,
+                                    LinearLayout layoutToPresent,
+                                    PhotoItemsPresenterCallbacks callback) {
 
         this.mRecyclerView = new RecyclerView(activity);
 
@@ -42,7 +46,8 @@ public class PhotoPresenterRecyclerView implements PhotoItemsPresenter {
             }
         });
 
-        activity.setContentView(mRecyclerView);
+        layoutToPresent.removeAllViews();
+        layoutToPresent.addView(this.mRecyclerView);
     }
 
     @Override
